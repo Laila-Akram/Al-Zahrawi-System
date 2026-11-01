@@ -85,6 +85,12 @@ const loginUser = async (req, res) => {
       });
     }
 
+    if (user.isRejected) {
+      return res.status(403).json({
+        message: "Your account has been rejected by admin",
+      });
+    }
+
     if (user.isApproved !== true) {
       return res.status(403).json({
         message: "Your account is awaiting admin approval",

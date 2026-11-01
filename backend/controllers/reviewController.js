@@ -1,3 +1,4 @@
+
 const Review = require("../models/ReviewSchema");
 const Offer = require("../models/OfferSchema");
 
@@ -71,18 +72,45 @@ const createReview = async (req, res) => {
   }
 };
 
-// Get supplier reviews
+// Get supplier reviews and average rating
 const getSupplierReviews = async (req, res) => {
   try {
+    const supplierId = req.params.supplierId;
+
     const reviews = await Review.find({
-      supplier: req.params.supplierId,
+      supplier: supplierId,
     })
       .populate("doctor", "name")
       .populate("supplier", "name")
       .sort({ createdAt: -1 });
 
+    const result = await Review.aggregate([
+      {
+        $match: {
+          supplier: new (require("mongoose").Types.ObjectId)(supplierId),
+        },
+      },
+      {
+        $group: {
+          _id: "$supplier",
+          averageRating: { $avg: "$rating" },
+          totalReviews: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const averageRating =
+      result.length > 0
+        ? Number(result[0].averageRating.toFixed(1))
+        : 0;
+
+    const totalReviews =
+      result.length > 0 ? result[0].totalReviews : 0;
+
     res.status(200).json({
-      count: reviews.length,
+      supplier: supplierId,
+      averageRating,
+      totalReviews,
       reviews,
     });
   } catch (error) {

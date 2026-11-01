@@ -6,22 +6,27 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
+const protect = require("./middleware/authMiddleware");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
 app.use("/api/auth", authRoutes);
 
-// Test route
 app.get("/", (req, res) => {
   res.send("AL-ZAHRAWI API is running!");
 });
 
-// Start server
+// Protected test route
+app.get("/api/test/protected", protect, (req, res) => {
+  res.status(200).json({
+    message: "Protected route accessed successfully",
+    user: req.user,
+  });
+});
+
 const startServer = async () => {
   await connectDB();
 

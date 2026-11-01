@@ -91,6 +91,12 @@ const loginUser = async (req, res) => {
       });
     }
 
+    if (user.isActive === false) {
+      return res.status(403).json({
+        message: "Your account has been deactivated by admin",
+      });
+    }
+
     if (user.isApproved !== true) {
       return res.status(403).json({
         message: "Your account is awaiting admin approval",

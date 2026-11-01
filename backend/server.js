@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const protect = require("./middleware/authMiddleware");
+const authorize = require("./middleware/roleMiddleware");
 
 const app = express();
 
@@ -19,11 +20,24 @@ app.get("/", (req, res) => {
   res.send("AL-ZAHRAWI API is running!");
 });
 
-// Protected test route
-app.get("/api/test/protected", protect, (req, res) => {
+// Doctor test route
+app.get("/api/test/doctor", protect, authorize("doctor"), (req, res) => {
   res.status(200).json({
-    message: "Protected route accessed successfully",
-    user: req.user,
+    message: "Doctor access granted",
+  });
+});
+
+// Supplier test route
+app.get("/api/test/supplier", protect, authorize("supplier"), (req, res) => {
+  res.status(200).json({
+    message: "Supplier access granted",
+  });
+});
+
+// Admin test route
+app.get("/api/test/admin", protect, authorize("admin"), (req, res) => {
+  res.status(200).json({
+    message: "Admin access granted",
   });
 });
 

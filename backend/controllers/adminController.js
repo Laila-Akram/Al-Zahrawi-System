@@ -70,12 +70,67 @@ const rejectUser = async (req, res) => {
   }
 };
 
-// Get all doctors and suppliers
+// Get all doctors and suppliers with search and filters
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({
+    const { search, role, status } = req.query;
+
+    const filter = {
       role: { $in: ["doctor", "supplier"] },
-    })
+    };
+
+    // Search by name or email
+    if (search && search.trim()) {
+      filter.$or = [
+        { name: { $regex: search.trim(), $options: "i" } },
+        { email: { $regex: search.trim(), $options: "i" } },
+      ];
+    }
+
+    // Filter by role
+    if (role) {
+      if (!["doctor", "supplier"].includes(role)) {
+        return res.status(400).json({
+          message: "Invalid user role",
+        });
+      }
+
+      filter.role = role;
+    }
+
+    // Filter by account status
+    if (status) {
+      switch (status) {
+        case "pending":
+          filter.isApproved = false;
+          filter.isRejected = false;
+          break;
+
+        case "approved":
+          filter.isApproved = true;
+          filter.isRejected = false;
+          break;
+
+        case "rejected":
+          filter.isRejected = true;
+          break;
+
+        case "active":
+          filter.isActive = true;
+          break;
+
+        case "inactive":
+          filter.isActive = false;
+          break;
+
+        default:
+          return res.status(400).json({
+            message: "Invalid user status",
+          });
+      }
+    }
+
+    const users = await User.find(filter)
       .select("-password")
       .sort({ createdAt: -1 });
 

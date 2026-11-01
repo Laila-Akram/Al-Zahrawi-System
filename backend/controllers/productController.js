@@ -1,10 +1,41 @@
+
 const Product = require("../models/ProductSchema");
 const Category = require("../models/CategorySchema");
 
-// Get all products
+// Get all products with search and filters
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find()
+    const { search, category, status } = req.query;
+
+    const filter = {};
+
+    // Search by product name
+    if (search && search.trim()) {
+      filter.name = {
+        $regex: search.trim(),
+        $options: "i",
+      };
+    }
+
+    // Filter by category
+    if (category) {
+      filter.category = category;
+    }
+
+    // Filter by product status
+    if (status) {
+      const allowedStatuses = ["active", "inactive"];
+
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid product status",
+        });
+      }
+
+      filter.status = status;
+    }
+
+    const products = await Product.find(filter)
       .populate("category", "name")
       .sort({ createdAt: -1 });
 

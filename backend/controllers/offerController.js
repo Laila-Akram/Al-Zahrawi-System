@@ -1,13 +1,35 @@
 const Offer = require("../models/OfferSchema");
 const SupplyRequest = require("../models/SupplyRequestSchema");
 
-// Get all offers
+// Get offers based on user role
 const getOffers = async (req, res) => {
   try {
-    const offers = await Offer.find()
-      .populate("supplier", "name email")
-      .populate("supplyRequest", "title description")
-      .sort({ createdAt: -1 });
+    let offers;
+
+    if (req.user.role === "supplier") {
+      // Supplier sees only their own offers
+      offers = await Offer.find({
+        supplier: req.user.id,
+      });
+    } else if (req.user.role === "doctor") {
+      // Doctor sees offers on their own requests
+      const requests = await SupplyRequest.find({
+        doctor: req.user.id,
+      }).select("_id");
+
+      const requestIds = requests.map((request) => request._id);
+
+      offers = await Offer.find({
+        supplyRequest: { $in: requestIds },
+      });
+    }
+
+    offers = await Offer.populate(offers, [
+      { path: "supplier", select: "name email" },
+      { path: "supplyRequest", select: "title description" },
+    ]);
+
+    offers.sort((a, b) => b.createdAt - a.createdAt);
 
     res.status(200).json({
       count: offers.length,

@@ -1,9 +1,35 @@
+
 const SupplyRequest = require("../models/SupplyRequestSchema");
 
-// Get all supply requests
+// Get all supply requests with search and filter
 const getSupplyRequests = async (req, res) => {
   try {
-    const requests = await SupplyRequest.find()
+    const { search, status } = req.query;
+
+    const filter = {};
+
+    // Search by title or description
+    if (search && search.trim()) {
+      filter.$or = [
+        { title: { $regex: search.trim(), $options: "i" } },
+        { description: { $regex: search.trim(), $options: "i" } },
+      ];
+    }
+
+    // Filter by request status
+    if (status) {
+      const allowedStatuses = ["open", "closed", "completed"];
+
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid request status",
+        });
+      }
+
+      filter.status = status;
+    }
+
+    const requests = await SupplyRequest.find(filter)
       .populate("doctor", "name email")
       .sort({ createdAt: -1 });
 

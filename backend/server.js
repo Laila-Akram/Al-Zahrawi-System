@@ -9,6 +9,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const productRoutes = require("./routes/productRoutes");
 const supplyRequestRoutes = require("./routes/supplyRequestRoutes");
+const offerRoutes = require("./routes/offerRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const protect = require("./middleware/authMiddleware");
 const authorize = require("./middleware/roleMiddleware");
@@ -23,6 +25,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/supply-requests", supplyRequestRoutes);
+app.use("/api/offers", offerRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/", (req, res) => {
   res.send("AL-ZAHRAWI API is running!");

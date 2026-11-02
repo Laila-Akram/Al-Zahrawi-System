@@ -18,7 +18,7 @@ const SupplierRatings = () => {
       supplierList.map(async (supplier) => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/reviews/supplier/${supplier._id}`,
+            `https://al-zahrawi-backend.onrender.com/api/reviews/supplier/${supplier._id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ const SupplierRatings = () => {
       setError("");
 
       const response = await fetch(
-        "http://localhost:5000/api/offers",
+        "https://al-zahrawi-backend.onrender.com/api/offers",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -125,7 +125,7 @@ const SupplierRatings = () => {
       setSubmitting(supplier._id);
 
       const response = await fetch(
-        "http://localhost:5000/api/reviews",
+        "https://al-zahrawi-backend.onrender.com/api/reviews",
         {
           method: "POST",
           headers: {

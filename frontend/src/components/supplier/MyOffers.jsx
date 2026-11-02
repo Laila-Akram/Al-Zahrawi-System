@@ -10,7 +10,7 @@ const MyOffers = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://localhost:5000/api/offers", {
+        const response = await fetch("https://al-zahrawi-backend.onrender.com/api/offers", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

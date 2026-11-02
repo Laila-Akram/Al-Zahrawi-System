@@ -24,7 +24,7 @@ const UserManagement = () => {
       if (status) params.append("status", status);
 
       const response = await fetch(
-        `http://localhost:5000/api/admin/users?${params.toString()}`,
+        `https://al-zahrawi-backend.onrender.com/api/admin/users?${params.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const UserManagement = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/admin/users/${user._id}/status`,
+        `https://al-zahrawi-backend.onrender.com/api/admin/users/${user._id}/status`,
         {
           method: "PATCH",
           headers: {

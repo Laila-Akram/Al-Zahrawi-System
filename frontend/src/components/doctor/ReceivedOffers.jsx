@@ -21,8 +21,8 @@ const ReceivedOffers = () => {
       };
 
       const [offersResponse, requestsResponse] = await Promise.all([
-        fetch("http://localhost:5000/api/offers", { headers }),
-        fetch("http://localhost:5000/api/supply-requests", { headers }),
+        fetch("https://al-zahrawi-backend.onrender.com/api/offers", { headers }),
+        fetch("https://al-zahrawi-backend.onrender.com/api/supply-requests", { headers }),
       ]);
 
       const offersData = await offersResponse.json();
@@ -62,7 +62,7 @@ const ReceivedOffers = () => {
       setMessage("");
 
       const response = await fetch(
-        `http://localhost:5000/api/offers/${offerId}/accept`,
+        `https://al-zahrawi-backend.onrender.com/api/offers/${offerId}/accept`,
         {
           method: "PATCH",
           headers: {

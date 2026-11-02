@@ -14,7 +14,7 @@ const AdminDashboard = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:5000/api/admin/pending-users",
+        "https://al-zahrawi-backend.onrender.com/api/admin/pending-users",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/admin/${action}/${userId}`,
+        `https://al-zahrawi-backend.onrender.com/api/admin/${action}/${userId}`,
         {
           method: "PATCH",
           headers: {

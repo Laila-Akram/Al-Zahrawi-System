@@ -22,7 +22,7 @@ const DoctorDashboard = () => {
   const fetchRequests = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/supply-requests",
+        "https://al-zahrawi-backend.onrender.com/api/supply-requests",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ const DoctorDashboard = () => {
   const fetchOffers = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/offers",
+        "https://al-zahrawi-backend.onrender.com/api/offers",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const DoctorDashboard = () => {
       setMessage("");
 
       const response = await fetch(
-        "http://localhost:5000/api/supply-requests",
+        "https://al-zahrawi-backend.onrender.com/api/supply-requests",
         {
           method: "POST",
           headers: {
@@ -141,7 +141,7 @@ const DoctorDashboard = () => {
       setMessage("");
 
       const response = await fetch(
-        `http://localhost:5000/api/offers/${offerId}/accept`,
+        `https://al-zahrawi-backend.onrender.com/api/offers/${offerId}/accept`,
         {
           method: "PATCH",
           headers: {

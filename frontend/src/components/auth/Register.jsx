@@ -45,7 +45,7 @@ const Register = () => {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/register",
+        "https://al-zahrawi-backend.onrender.com/api/auth/register",
         {
           method: "POST",
           headers: {
@@ -91,7 +91,7 @@ const Register = () => {
       setLoading(true);
       setMessage("");
 
-      const response = await fetch("http://localhost:5000/api/auth/google", {
+      const response = await fetch("https://al-zahrawi-backend.onrender.com/api/auth/google", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

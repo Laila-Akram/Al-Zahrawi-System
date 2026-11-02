@@ -32,8 +32,8 @@ const CatalogManagement = () => {
       const headers = getHeaders();
 
       const [productsResponse, categoriesResponse] = await Promise.all([
-        fetch("http://localhost:5000/api/products", { headers }),
-        fetch("http://localhost:5000/api/categories", { headers }),
+        fetch("https://al-zahrawi-backend.onrender.com/api/products", { headers }),
+        fetch("https://al-zahrawi-backend.onrender.com/api/categories", { headers }),
       ]);
 
       const productsData = await productsResponse.json();
@@ -76,7 +76,7 @@ const CatalogManagement = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/categories",
+        "https://al-zahrawi-backend.onrender.com/api/categories",
         {
           method: "POST",
           headers: getHeaders(),
@@ -119,7 +119,7 @@ const CatalogManagement = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/products",
+        "https://al-zahrawi-backend.onrender.com/api/products",
         {
           method: "POST",
           headers: getHeaders(),
@@ -163,7 +163,7 @@ const CatalogManagement = () => {
       setMessage("");
 
       const response = await fetch(
-        `http://localhost:5000/api/products/${productId}`,
+        `https://al-zahrawi-backend.onrender.com/api/products/${productId}`,
         {
           method: "DELETE",
           headers: getHeaders(),

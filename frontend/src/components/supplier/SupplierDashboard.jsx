@@ -21,7 +21,7 @@ const SupplierDashboard = () => {
       setError("");
 
       const response = await fetch(
-        "http://localhost:5000/api/supply-requests",
+        "https://al-zahrawi-backend.onrender.com/api/supply-requests",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ const SupplierDashboard = () => {
       setError("");
       setMessage("");
 
-      const response = await fetch("http://localhost:5000/api/offers", {
+      const response = await fetch("https://al-zahrawi-backend.onrender.com/api/offers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

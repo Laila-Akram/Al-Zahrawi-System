@@ -10,7 +10,7 @@ const SupplierRatings = () => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:5000/api/admin/users?role=supplier",
+        "https://al-zahrawi-backend.onrender.com/api/admin/users?role=supplier",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,7 +29,7 @@ const SupplierRatings = () => {
       const suppliersWithRatings = await Promise.all(
         supplierList.map(async (supplier) => {
           const reviewResponse = await fetch(
-            `http://localhost:5000/api/reviews/supplier/${supplier._id}`,
+            `https://al-zahrawi-backend.onrender.com/api/reviews/supplier/${supplier._id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

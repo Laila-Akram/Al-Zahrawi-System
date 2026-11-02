@@ -1,11 +1,12 @@
 import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
 
 function App() {
   return (
     <>
       <Navbar />
 
-      <div className="container mt-5 text-center">
+      <main className="container mt-5 text-center">
         <h1 className="fw-bold">AL-ZAHRAWI</h1>
 
         <p className="lead">
@@ -15,7 +16,9 @@ function App() {
         <button className="btn btn-primary">
           Get Started
         </button>
-      </div>
+      </main>
+
+      <Footer />
     </>
   );
 }

@@ -5,6 +5,10 @@ import Register from "./components/auth/Register";
 import DashboardLayout from "./components/common/DashboardLayout";
 
 import DoctorDashboard from "./components/doctor/DoctorDashboard";
+import MyRequests from "./components/doctor/MyRequests";
+import ReceivedOffers from "./components/doctor/ReceivedOffers";
+import SupplierRatings from "./components/doctor/SupplierRatings";
+
 import SupplierDashboard from "./components/supplier/SupplierDashboard";
 import MyOffers from "./components/supplier/MyOffers";
 
@@ -29,6 +33,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* Doctor */}
         <Route
           path="/doctor"
           element={
@@ -39,8 +44,12 @@ const App = () => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DoctorDashboard />} />
+          <Route path="requests" element={<MyRequests />} />
+          <Route path="offers" element={<ReceivedOffers />} />
+          <Route path="ratings" element={<SupplierRatings />} />
         </Route>
 
+        {/* Supplier */}
         <Route
           path="/supplier"
           element={
@@ -51,9 +60,11 @@ const App = () => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<SupplierDashboard />} />
+          <Route path="requests" element={<SupplierDashboard />} />
           <Route path="offers" element={<MyOffers />} />
         </Route>
 
+        {/* Admin */}
         <Route
           path="/admin"
           element={

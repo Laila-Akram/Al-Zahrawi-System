@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./components/auth/Login";
@@ -6,6 +7,7 @@ import DashboardLayout from "./components/common/DashboardLayout";
 
 import DoctorDashboard from "./components/doctor/DoctorDashboard";
 import AdminDashboard from "./components/admin/AdminDashboard";
+import UserManagement from "./components/admin/UserManagement";
 
 const RoleRoute = ({ allowedRole, children }) => {
   const user = JSON.parse(localStorage.getItem("user") || "null");
@@ -24,28 +26,30 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Doctor Dashboard */}
         <Route
-          path="/doctor/dashboard"
+          path="/doctor"
           element={
             <RoleRoute allowedRole="doctor">
               <DashboardLayout />
             </RoleRoute>
           }
         >
-          <Route index element={<DoctorDashboard />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DoctorDashboard />} />
         </Route>
 
-        {/* Admin Dashboard */}
         <Route
-          path="/admin/dashboard"
+          path="/admin"
           element={
             <RoleRoute allowedRole="admin">
               <DashboardLayout />
             </RoleRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="approvals" element={<AdminDashboard />} />
+          <Route path="users" element={<UserManagement />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

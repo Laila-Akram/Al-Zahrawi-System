@@ -44,7 +44,9 @@ const DashboardLayout = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const role = user.role || "doctor";
 
-  const currentPage = navigation[role].find(
+  const currentNavigation = navigation[role] || navigation.doctor;
+
+  const currentPage = currentNavigation.find(
     (item) => item.path === location.pathname
   );
 
@@ -63,29 +65,26 @@ const DashboardLayout = () => {
 
   return (
     <div className={`app-layout ${darkMode ? "dark-mode" : ""}`}>
-
       <aside className={`app-sidebar ${sidebarOpen ? "show" : ""}`}>
         <div className="brand-container">
-          <div className="brand-logo">✦</div>
+          <div className="brand-logo">AZ</div>
 
           <div>
             <div className="brand-name">AL-ZAHRAWI</div>
-
             <div className="brand-slogan">
               Inspired by history, built for modern dentistry.
             </div>
           </div>
         </div>
 
-        <div className="sidebar-section-title">
-          WORKSPACE
-        </div>
+        <div className="sidebar-section-title">WORKSPACE</div>
 
         <nav className="sidebar-navigation">
-          {navigation[role].map((item) => (
+          {currentNavigation.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              end
               className={({ isActive }) =>
                 `sidebar-link ${isActive ? "active" : ""}`
               }
@@ -99,7 +98,6 @@ const DashboardLayout = () => {
 
         <div className="sidebar-note">
           <strong>Trusted Dental Supplies Platform</strong>
-
           <p>
             Clear requests, comparable offers, and informed decisions.
           </p>
@@ -108,7 +106,6 @@ const DashboardLayout = () => {
 
       <main className="app-main">
         <header className="app-topbar">
-
           <div className="topbar-left">
             <button
               type="button"
@@ -141,7 +138,7 @@ const DashboardLayout = () => {
 
               <div>
                 <strong>{user.name || "User"}</strong>
-                <small>{roleNames[role]}</small>
+                <small>{roleNames[role] || "User"}</small>
               </div>
             </div>
 
@@ -153,14 +150,12 @@ const DashboardLayout = () => {
               Logout
             </button>
           </div>
-
         </header>
 
         <div className="app-content">
           <Outlet />
         </div>
       </main>
-
     </div>
   );
 };

@@ -8,6 +8,7 @@ import DashboardLayout from "./components/common/DashboardLayout";
 import DoctorDashboard from "./components/doctor/DoctorDashboard";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import UserManagement from "./components/admin/UserManagement";
+import CatalogManagement from "./components/admin/CatalogManagement";
 
 const RoleRoute = ({ allowedRole, children }) => {
   const user = JSON.parse(localStorage.getItem("user") || "null");
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="approvals" element={<AdminDashboard />} />
           <Route path="users" element={<UserManagement />} />
+          <Route path="catalog" element={<CatalogManagement />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

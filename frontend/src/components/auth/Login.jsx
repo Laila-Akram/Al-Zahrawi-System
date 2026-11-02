@@ -54,7 +54,7 @@ const Login = () => {
       } else if (data.user.role === "admin") {
         navigate("/admin/dashboard");
       } else if (data.user.role === "supplier") {
-        setMessage("Supplier dashboard is not available yet.");
+        navigate("/supplier/dashboard");
       }
     } catch (error) {
       setMessage(error.message);

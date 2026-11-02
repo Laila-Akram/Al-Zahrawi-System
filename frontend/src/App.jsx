@@ -6,6 +6,8 @@ import Register from "./components/auth/Register";
 import DashboardLayout from "./components/common/DashboardLayout";
 
 import DoctorDashboard from "./components/doctor/DoctorDashboard";
+import SupplierDashboard from "./components/supplier/SupplierDashboard";
+
 import AdminDashboard from "./components/admin/AdminDashboard";
 import UserManagement from "./components/admin/UserManagement";
 import CatalogManagement from "./components/admin/CatalogManagement";
@@ -37,6 +39,18 @@ const App = () => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DoctorDashboard />} />
+        </Route>
+
+        <Route
+          path="/supplier"
+          element={
+            <RoleRoute allowedRole="supplier">
+              <DashboardLayout />
+            </RoleRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<SupplierDashboard />} />
         </Route>
 
         <Route

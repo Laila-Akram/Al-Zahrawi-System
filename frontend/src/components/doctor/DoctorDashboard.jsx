@@ -3,13 +3,16 @@ import { useEffect, useState } from "react";
 
 const DoctorDashboard = () => {
   const [requests, setRequests] = useState([]);
-  const [showForm, setShowForm] = useState(false);
+  const [offers, setOffers] = useState([]);
 
+  const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [accepting, setAccepting] = useState("");
+
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -18,9 +21,6 @@ const DoctorDashboard = () => {
 
   const fetchRequests = async () => {
     try {
-      setLoading(true);
-      setError("");
-
       const response = await fetch(
         "http://localhost:5000/api/supply-requests",
         {
@@ -36,9 +36,7 @@ const DoctorDashboard = () => {
         throw new Error(data.message || "Failed to load requests.");
       }
 
-      const allRequests = data.requests || [];
-
-      const myRequests = allRequests.filter(
+      const myRequests = (data.requests || []).filter(
         (request) =>
           String(request.doctor?._id || request.doctor?.id) ===
           String(user.id)
@@ -47,13 +45,45 @@ const DoctorDashboard = () => {
       setRequests(myRequests);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const fetchOffers = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/offers",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to load offers.");
+      }
+
+      setOffers(data.offers || []);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const refreshDashboard = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      await Promise.all([fetchRequests(), fetchOffers()]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRequests();
+    refreshDashboard();
   }, []);
 
   const handleCreateRequest = async (e) => {
@@ -90,7 +120,7 @@ const DoctorDashboard = () => {
       setShowForm(false);
       setMessage("Your supply request was created successfully.");
 
-      await fetchRequests();
+      await refreshDashboard();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -98,11 +128,63 @@ const DoctorDashboard = () => {
     }
   };
 
+  const handleAcceptOffer = async (offerId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to accept this offer?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setAccepting(offerId);
+      setError("");
+      setMessage("");
+
+      const response = await fetch(
+        `http://localhost:5000/api/offers/${offerId}/accept`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to accept offer.");
+      }
+
+      setMessage("Offer accepted successfully.");
+
+      await refreshDashboard();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setAccepting("");
+    }
+  };
+
   const getStatusClass = (status) => {
-    if (status === "open") return "bg-success";
-    if (status === "completed") return "bg-primary";
+    if (status === "open" || status === "accepted") {
+      return "bg-success";
+    }
+
+    if (status === "completed") {
+      return "bg-primary";
+    }
+
+    if (status === "rejected") {
+      return "bg-danger";
+    }
+
     return "bg-secondary";
   };
+
+  const pendingOffers = offers.filter(
+    (offer) => offer.status === "pending"
+  );
 
   return (
     <div>
@@ -185,7 +267,7 @@ const DoctorDashboard = () => {
         <div className="col-md-4">
           <div className="dashboard-card">
             <div className="stat-label">Received Offers</div>
-            <div className="stat-number">0</div>
+            <div className="stat-number">{offers.length}</div>
             <small className="text-muted">Offers from suppliers</small>
           </div>
         </div>
@@ -193,12 +275,109 @@ const DoctorDashboard = () => {
         <div className="col-md-4">
           <div className="dashboard-card">
             <div className="stat-label">Pending Decisions</div>
-            <div className="stat-number">0</div>
+            <div className="stat-number">{pendingOffers.length}</div>
             <small className="text-muted">
-              Requests waiting for your choice
+              Offers waiting for your choice
             </small>
           </div>
         </div>
+      </div>
+
+      <div className="dashboard-card mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 className="fw-bold mb-1">Received Offers</h5>
+            <p className="text-muted small mb-0">
+              Compare supplier prices and choose an offer.
+            </p>
+          </div>
+
+          <button
+            className="btn btn-outline-secondary btn-sm"
+            onClick={refreshDashboard}
+            disabled={loading}
+          >
+            Refresh
+          </button>
+        </div>
+
+        {loading ? (
+          <p className="text-center text-muted py-4">
+            Loading offers...
+          </p>
+        ) : offers.length === 0 ? (
+          <div className="text-center py-4">
+            <h6 className="fw-semibold">No offers received yet</h6>
+            <p className="text-muted small mb-0">
+              Supplier offers will appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="table align-middle">
+              <thead>
+                <tr>
+                  <th>Request</th>
+                  <th>Supplier</th>
+                  <th>Price</th>
+                  <th>Details</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {offers.map((offer) => (
+                  <tr key={offer._id}>
+                    <td className="fw-semibold">
+                      {offer.supplyRequest?.title || "Request"}
+                    </td>
+
+                    <td>
+                      {offer.supplier?.name || "Supplier"}
+                    </td>
+
+                    <td className="fw-semibold">
+                      {Number(offer.price).toFixed(2)} JOD
+                    </td>
+
+                    <td>
+                      {offer.details || "—"}
+                    </td>
+
+                    <td>
+                      <span className={`badge ${getStatusClass(offer.status)}`}>
+                        {offer.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      {offer.status === "pending" &&
+                      offer.supplyRequest &&
+                      requests.some(
+                        (request) =>
+                          request._id === offer.supplyRequest._id &&
+                          request.status === "open"
+                      ) ? (
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleAcceptOffer(offer._id)}
+                          disabled={accepting === offer._id}
+                        >
+                          {accepting === offer._id
+                            ? "Accepting..."
+                            : "Accept Offer"}
+                        </button>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="dashboard-card">
@@ -212,7 +391,7 @@ const DoctorDashboard = () => {
 
           <button
             className="btn btn-outline-secondary btn-sm"
-            onClick={fetchRequests}
+            onClick={refreshDashboard}
             disabled={loading}
           >
             Refresh

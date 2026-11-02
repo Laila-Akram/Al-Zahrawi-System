@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 
 const mongoose = require("mongoose");
@@ -17,29 +18,36 @@ const createAdmin = async () => {
     }
 
     const email = ADMIN_EMAIL.toLowerCase().trim();
-
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      console.log("An account with this email already exists.");
-      return;
-    }
-
     const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
 
-    await User.create({
-      name: ADMIN_NAME,
-      email,
-      password: hashedPassword,
-      role: "admin",
-      isApproved: true,
-      isRejected: false,
-      isActive: true,
-    });
+    const admin = await User.findOne({ email });
 
-    console.log("Admin account created successfully.");
+    if (admin) {
+      admin.name = ADMIN_NAME;
+      admin.password = hashedPassword;
+      admin.role = "admin";
+      admin.isApproved = true;
+      admin.isRejected = false;
+      admin.isActive = true;
+
+      await admin.save();
+
+      console.log("Admin account updated successfully.");
+    } else {
+      await User.create({
+        name: ADMIN_NAME,
+        email,
+        password: hashedPassword,
+        role: "admin",
+        isApproved: true,
+        isRejected: false,
+        isActive: true,
+      });
+
+      console.log("Admin account created successfully.");
+    }
   } catch (error) {
-    console.error("Admin creation failed:", error.message);
+    console.error("Admin setup failed:", error.message);
   } finally {
     await mongoose.connection.close();
   }

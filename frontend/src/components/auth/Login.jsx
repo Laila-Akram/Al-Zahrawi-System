@@ -1,10 +1,13 @@
+import { Link } from "react-router-dom";
+
 const Login = () => {
   return (
-    <div className="container mt-5">
+    <div className="container my-5">
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-4">
           <div className="card shadow-sm border-0">
             <div className="card-body p-4">
+
               <h2 className="text-center fw-bold mb-2">
                 Welcome Back
               </h2>
@@ -34,10 +37,36 @@ const Login = () => {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary w-100">
+                <button
+                  type="submit"
+                  className="btn btn-primary w-100"
+                >
                   Login
                 </button>
               </form>
+
+              <div className="text-center my-3">
+                <span className="text-muted">OR</span>
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-outline-dark w-100"
+              >
+                <strong className="me-2">G</strong>
+                Continue with Google
+              </button>
+
+              <div className="text-center mt-4">
+                <span className="text-muted">
+                  Don't have an account?{" "}
+                </span>
+
+                <Link to="/register">
+                  Register
+                </Link>
+              </div>
+
             </div>
           </div>
         </div>

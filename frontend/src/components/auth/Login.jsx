@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,6 +23,16 @@ const Login = () => {
     });
   };
 
+  const goToDashboard = (user) => {
+    if (user.role === "doctor") {
+      navigate("/doctor/dashboard");
+    } else if (user.role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (user.role === "supplier") {
+      navigate("/supplier/dashboard");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -29,16 +40,13 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:5000/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       const data = await response.json();
 
@@ -49,17 +57,47 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      if (data.user.role === "doctor") {
-        navigate("/doctor/dashboard");
-      } else if (data.user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (data.user.role === "supplier") {
-        navigate("/supplier/dashboard");
-      }
+      goToDashboard(data.user);
     } catch (error) {
       setMessage(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setMessage("");
+
+      const response = await fetch("http://localhost:5000/api/auth/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message === "Please select Doctor or Supplier account type"
+            ? "New user? Please create your account from the Register page using Google."
+            : data.message || "Google login failed."
+        );
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        goToDashboard(data.user);
+      } else {
+        setMessage(data.message);
+      }
+    } catch (error) {
+      setMessage(error.message);
     }
   };
 
@@ -77,14 +115,12 @@ const Login = () => {
         >
           <div className="mb-4">
             <h2 className="fw-bold">AL-ZAHRAWI</h2>
-
             <p className="small" style={{ color: "#c5dce0" }}>
               Inspired by history, built for modern dentistry.
             </p>
           </div>
 
           <h3 className="fw-semibold mb-3">Welcome Back</h3>
-
           <p style={{ color: "#d5e4e7", lineHeight: "1.8" }}>
             Connect with trusted dental suppliers and manage your dental
             supply requests easily.
@@ -95,7 +131,6 @@ const Login = () => {
           <div className="mx-auto" style={{ maxWidth: "420px" }}>
             <div className="mb-4">
               <h3 className="fw-bold">Login to Your Account</h3>
-
               <p className="text-muted">
                 Enter your email and password to continue.
               </p>
@@ -112,7 +147,6 @@ const Login = () => {
                 <label className="form-label fw-semibold">
                   Email Address
                 </label>
-
                 <input
                   type="email"
                   name="email"
@@ -126,7 +160,6 @@ const Login = () => {
 
               <div className="mb-4">
                 <label className="form-label fw-semibold">Password</label>
-
                 <input
                   type="password"
                   name="password"
@@ -149,15 +182,15 @@ const Login = () => {
 
             <div className="text-center my-4 text-muted">OR</div>
 
-            <button
-              type="button"
-              className="btn btn-outline-secondary btn-lg w-100"
-              onClick={() =>
-                setMessage("Google sign-in will be connected later.")
-              }
-            >
-              Continue with Google
-            </button>
+            <div className="d-flex justify-content-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => setMessage("Google login was unsuccessful.")}
+                text="continue_with"
+                shape="rectangular"
+                width="320"
+              />
+            </div>
 
             <p className="text-center mt-4 mb-0">
               Don't have an account?

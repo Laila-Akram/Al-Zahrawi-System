@@ -4,17 +4,22 @@ import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import DashboardLayout from "./components/common/DashboardLayout";
 
+// Doctor
 import DoctorDashboard from "./components/doctor/DoctorDashboard";
 import MyRequests from "./components/doctor/MyRequests";
 import ReceivedOffers from "./components/doctor/ReceivedOffers";
 import SupplierRatings from "./components/doctor/SupplierRatings";
 
+// Supplier
 import SupplierDashboard from "./components/supplier/SupplierDashboard";
 import MyOffers from "./components/supplier/MyOffers";
+import MyProfile from "./components/supplier/MyProfile";
 
+// Admin
 import AdminDashboard from "./components/admin/AdminDashboard";
 import UserManagement from "./components/admin/UserManagement";
 import CatalogManagement from "./components/admin/CatalogManagement";
+import AdminSupplierRatings from "./components/admin/SupplierRatings";
 
 const RoleRoute = ({ allowedRole, children }) => {
   const user = JSON.parse(localStorage.getItem("user") || "null");
@@ -62,6 +67,7 @@ const App = () => {
           <Route path="dashboard" element={<SupplierDashboard />} />
           <Route path="requests" element={<SupplierDashboard />} />
           <Route path="offers" element={<MyOffers />} />
+          <Route path="profile" element={<MyProfile />} />
         </Route>
 
         {/* Admin */}
@@ -78,6 +84,7 @@ const App = () => {
           <Route path="approvals" element={<AdminDashboard />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="catalog" element={<CatalogManagement />} />
+          <Route path="ratings" element={<AdminSupplierRatings />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

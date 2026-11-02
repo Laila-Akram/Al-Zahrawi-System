@@ -1,7 +1,11 @@
+
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -65,6 +69,61 @@ const Register = () => {
       setMessage(
         "Account created successfully. Waiting for admin approval."
       );
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    if (!formData.role) {
+      setMessage("Please select your account type first.");
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setMessage("Please accept the Terms and Conditions first.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const response = await fetch("http://localhost:5000/api/auth/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+          role: formData.role,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok && response.status !== 202) {
+        throw new Error(data.message || "Google registration failed.");
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        if (data.user.role === "doctor") {
+          navigate("/doctor/dashboard");
+        } else if (data.user.role === "supplier") {
+          navigate("/supplier/dashboard");
+        } else if (data.user.role === "admin") {
+          navigate("/admin/dashboard");
+        }
+      } else {
+        setMessage(
+          data.message || "Account created. Waiting for admin approval."
+        );
+      }
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -219,15 +278,22 @@ const Register = () => {
 
             <div className="text-center my-3 text-muted">OR</div>
 
-            <button
-              type="button"
-              className="btn btn-outline-secondary w-100 py-2"
-              onClick={() =>
-                setMessage("Google sign-in will be connected later.")
-              }
-            >
-              Continue with Google
-            </button>
+            <div className="d-flex justify-content-center">
+              {formData.role && formData.acceptTerms ? (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setMessage("Google registration failed.")}
+                  text="signup_with"
+                  shape="rectangular"
+                  width="320"
+                />
+              ) : (
+                <p className="text-muted small text-center">
+                  Select your account type and accept the terms to continue
+                  with Google.
+                </p>
+              )}
+            </div>
 
             <p className="text-center mt-4 mb-0">
               Already have an account?

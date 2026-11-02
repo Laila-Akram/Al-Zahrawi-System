@@ -15,6 +15,12 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
     status: {
       type: String,
       enum: ["active", "inactive"],

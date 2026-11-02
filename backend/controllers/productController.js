@@ -9,7 +9,6 @@ const getProducts = async (req, res) => {
 
     const filter = {};
 
-    // Search by product name
     if (search && search.trim()) {
       filter.name = {
         $regex: search.trim(),
@@ -17,12 +16,10 @@ const getProducts = async (req, res) => {
       };
     }
 
-    // Filter by category
     if (category) {
       filter.category = category;
     }
 
-    // Filter by product status
     if (status) {
       const allowedStatuses = ["active", "inactive"];
 
@@ -53,11 +50,26 @@ const getProducts = async (req, res) => {
 // Create a product
 const createProduct = async (req, res) => {
   try {
-    const { name, category } = req.body;
+    const { name, category, price } = req.body;
 
-    if (!name || !name.trim() || !category) {
+    if (
+      !name ||
+      !name.trim() ||
+      !category ||
+      price === undefined ||
+      price === null ||
+      price === ""
+    ) {
       return res.status(400).json({
-        message: "Please provide product name and category",
+        message: "Please provide product name, category, and price",
+      });
+    }
+
+    const productPrice = Number(price);
+
+    if (!Number.isFinite(productPrice) || productPrice < 0) {
+      return res.status(400).json({
+        message: "Price must be a valid non-negative number",
       });
     }
 
@@ -75,6 +87,7 @@ const createProduct = async (req, res) => {
     const product = await Product.create({
       name: name.trim(),
       category,
+      price: productPrice,
     });
 
     await product.populate("category", "name");
@@ -93,11 +106,26 @@ const createProduct = async (req, res) => {
 // Update a product
 const updateProduct = async (req, res) => {
   try {
-    const { name, category } = req.body;
+    const { name, category, price } = req.body;
 
-    if (!name || !name.trim() || !category) {
+    if (
+      !name ||
+      !name.trim() ||
+      !category ||
+      price === undefined ||
+      price === null ||
+      price === ""
+    ) {
       return res.status(400).json({
-        message: "Please provide product name and category",
+        message: "Please provide product name, category, and price",
+      });
+    }
+
+    const productPrice = Number(price);
+
+    if (!Number.isFinite(productPrice) || productPrice < 0) {
+      return res.status(400).json({
+        message: "Price must be a valid non-negative number",
       });
     }
 
@@ -117,6 +145,7 @@ const updateProduct = async (req, res) => {
       {
         name: name.trim(),
         category,
+        price: productPrice,
       },
       {
         new: true,

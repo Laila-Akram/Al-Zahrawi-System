@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./components/auth/Login";
@@ -7,6 +6,7 @@ import DashboardLayout from "./components/common/DashboardLayout";
 
 import DoctorDashboard from "./components/doctor/DoctorDashboard";
 import SupplierDashboard from "./components/supplier/SupplierDashboard";
+import MyOffers from "./components/supplier/MyOffers";
 
 import AdminDashboard from "./components/admin/AdminDashboard";
 import UserManagement from "./components/admin/UserManagement";
@@ -51,6 +51,7 @@ const App = () => {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<SupplierDashboard />} />
+          <Route path="offers" element={<MyOffers />} />
         </Route>
 
         <Route

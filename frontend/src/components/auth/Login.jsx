@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -50,8 +51,10 @@ const Login = () => {
 
       if (data.user.role === "doctor") {
         navigate("/doctor/dashboard");
-      } else {
-        setMessage("Your dashboard is not available yet.");
+      } else if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (data.user.role === "supplier") {
+        setMessage("Supplier dashboard is not available yet.");
       }
     } catch (error) {
       setMessage(error.message);
